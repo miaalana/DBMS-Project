@@ -14,7 +14,6 @@ CREATE TABLE User (
     PRIMARY KEY (userID)
 );
 
-
 CREATE TABLE Course (
     courseID int,
     userID int,
@@ -24,7 +23,6 @@ CREATE TABLE Course (
     PRIMARY KEY (courseID, userID)  
 );
 
-
 CREATE TABLE Enrol (
     userID int,
     courseID int,     
@@ -32,7 +30,6 @@ CREATE TABLE Enrol (
     FOREIGN KEY (courseID) REFERENCES Course(courseID),
     PRIMARY KEY (userID, courseID)  
 );
-
 
 CREATE TABLE Account (
     accountID int,
@@ -43,7 +40,6 @@ CREATE TABLE Account (
     PRIMARY KEY (accountID, userID) 
 );
 
-
 CREATE TABLE DiscussionForum (
     forumID int AUTO_INCREMENT,
     courseID int,
@@ -52,17 +48,17 @@ CREATE TABLE DiscussionForum (
     PRIMARY KEY (forumID, courseID) 
 );
 
-
 CREATE TABLE DiscussionThread (
     threadID int AUTO_INCREMENT,
     forumID int,
+    parentThreadID int,
     title varchar(255),
     content varchar(255),
     timestamp varchar(255),
     FOREIGN KEY (forumID) REFERENCES DiscussionForum(forumID),
+    FOREIGN KEY (parentThreadID) REFERENCES DiscussionThread(threadID),
     PRIMARY KEY (threadID, forumID) 
 );
-
 
 CREATE TABLE CalendarEvent (
     eventID int AUTO_INCREMENT,
@@ -73,7 +69,6 @@ CREATE TABLE CalendarEvent (
     PRIMARY KEY (eventID, courseID) 
 );
 
-
 CREATE TABLE Section (
     sectionID int AUTO_INCREMENT,
     courseID int,
@@ -81,7 +76,6 @@ CREATE TABLE Section (
     FOREIGN KEY (courseID) REFERENCES Course(courseID),
     PRIMARY KEY (sectionID, courseID) 
 );
-
 
 CREATE TABLE SectionItem (
     itemID int AUTO_INCREMENT,
@@ -91,7 +85,6 @@ CREATE TABLE SectionItem (
     FOREIGN KEY (sectionID) REFERENCES Section(sectionID),
     PRIMARY KEY (itemID, sectionID) 
 );
-
 
 CREATE TABLE Assignment (
     assignmentID int AUTO_INCREMENT,
