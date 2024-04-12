@@ -43,7 +43,7 @@ CREATE TABLE Account (
 
 
 CREATE TABLE DiscussionForum (
-    forumID int,
+    forumID int AUTO_INCREMENT,
     courseID int,
     forumName varchar(255),
     FOREIGN KEY (courseID) REFERENCES Course(courseID),
@@ -52,7 +52,7 @@ CREATE TABLE DiscussionForum (
 
 
 CREATE TABLE DiscussionThread (
-    threadID int,
+    threadID int AUTO_INCREMENT,
     forumID int,
     title varchar(255),
     content varchar(255),
@@ -63,7 +63,7 @@ CREATE TABLE DiscussionThread (
 
 
 CREATE TABLE CalendarEvent (
-    eventID int,
+    eventID int AUTO_INCREMENT,
     courseID int,
     eventName varchar(255),
     dueDate varchar(255),
@@ -73,7 +73,7 @@ CREATE TABLE CalendarEvent (
 
 
 CREATE TABLE Section (
-    sectionID int,
+    sectionID int AUTO_INCREMENT,
     courseID int,
     sectionName varchar(255),
     FOREIGN KEY (courseID) REFERENCES Course(courseID),
@@ -82,7 +82,7 @@ CREATE TABLE Section (
 
 
 CREATE TABLE SectionItem (
-    itemID int,
+    itemID int AUTO_INCREMENT,
     sectionID int,
     itemType varchar(255),
     content varchar(255),
@@ -92,7 +92,7 @@ CREATE TABLE SectionItem (
 
 
 CREATE TABLE Assignment (
-    assignmentID int,
+    assignmentID int AUTO_INCREMENT,
     courseID int,
     title varchar(255),
     submissionStatus varchar(255),
