@@ -206,7 +206,7 @@ def create_thread(fid):
         return make_response({'error':str(e)},400)
 
 # Users should be able to reply to a thread and replies can have replies.
-@app.route('/threads/<int:tid>/reply',methods=[''])
+@app.route('/threads/<int:tid>/reply',methods=['POST'])
 def reply_thread(tid):
     try:
         conn = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
@@ -227,7 +227,7 @@ def reply_thread(tid):
         return make_response({'error':str(e)},400)
 
 #A lecturer should have the ability to add course content. Course content can includes links, files, slides. Course content is separated by sections.
-@app.route('/course/<int:cid>/section/<int:sid>/add',methods=[''])
+@app.route('/course/<int:cid>/section/<int:sid>/add',methods=['POST'])
 def add_content(cid,sid):
     try:
         conn = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
@@ -250,7 +250,7 @@ def add_content(cid,sid):
         return make_response({'error':str(e)},400)
 
 # Should be able to retrieve all the course content for a particular course. 
-@app.route('/course/<int:cid>/section',methods=[''])
+@app.route('/course/<int:cid>/section',methods=['GET'])
 def get_content(cid,sid):
     try:
         conn = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
