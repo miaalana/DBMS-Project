@@ -1,5 +1,7 @@
 CREATE DATABASE CourseManagement;
-
+DROP USER IF EXISTS 'proj2test'@'localhost';
+CREATE USER 'proj2test'@'localhost' IDENTIFIED BY 'proj2password123';
+GRANT ALL PRIVILEGES ON CourseManagement.* TO 'proj2test'@'localhost';
 USE CourseManagement;
 
 CREATE TABLE User (
