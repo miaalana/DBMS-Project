@@ -16,11 +16,8 @@ CREATE TABLE User (
 
 CREATE TABLE Course (
     courseID int,
-    userID int,
     courseName varchar(255),
-    Grade varchar(255),
-    FOREIGN KEY (userID) REFERENCES User(userID),
-    PRIMARY KEY (courseID, userID)  
+    PRIMARY KEY (courseID)  
 );
 
 CREATE TABLE Enrol (
@@ -89,6 +86,7 @@ CREATE TABLE SectionItem (
 CREATE TABLE Assignment (
     assignmentID int AUTO_INCREMENT,
     courseID int,
+	Grade int,
     title varchar(255),
     submissionStatus varchar(255),
     gradingStatus varchar(255),

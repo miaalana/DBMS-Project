@@ -41,6 +41,29 @@ def register_user():
     
     return jsonify({'Message': 'User registered successfully'}), 201
 
+@app.route('/login', methods=['POST'])
+def register_user():
+    connection = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
+    cursor = conn.cursor()
+
+    data = request.json
+    email = data.get('email')     
+    password = data.get('password')
+
+    if not email or not password:
+        return jsonify({'Error': 'Please provide correct email and password.'}), 400
+    
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+    
+    cursor.execute("SELECT * FROM User WHERE email = %s AND password = %s", (email,hashed_password))
+    credential_exists = cursor.fetchone()
+
+    if not credential_exists:
+        return jsonify({'Error': 'Enter valid credentials'}), 400
+    cursor.close()
+    connection.close() 
+    return jsonify({'Message': 'User login successfully'}), 200
+
 # Should be able to retrieve all calendar events for a particular course.
 @app.route('/getCalendarEvents/<int:cid>',methods=['GET'])
 def get_calendar_events(cid):
