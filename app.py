@@ -5,7 +5,159 @@ import bcrypt
 
 app = Flask(__name__)
 
-#A student/lecturer should be able to create an account.A user should be able to register with a userid and password. A user can be an admin, lecturer or student
+def get_db_connection():
+    mydb = mysql.connector.connect(
+    host="localhost",
+    user="proj2test",
+    password="proj2password123",
+    database="CourseManagement"
+    )
+    return mydb
+
+def is_admin():
+    user_role = request.headers.get('role')
+    return user_role == 'Admin'
+
+def is_student():
+    user_role = request.headers.get('role')
+    return user_role == 'Student'
+ 
+
+@app.route("/", methods=['GET'])
+def hello_world():
+    return "<p>Hello, World!</p>"
+
+#Create Course
+@app.route('/create_course', methods=['POST'])
+def create_course():
+    try:
+
+        data = request.json
+
+        course_id = data.get('courseID')
+        course_name = data.get('courseName')
+
+        # Check if user is admin
+        if not is_admin():
+            return jsonify({'error': 'Only admins can create courses'}), 403
+
+        db_connection = get_db_connection()
+        mycursor = db_connection.cursor()
+        mycursor.execute("INSERT INTO Course (courseID, courseName) VALUES (%s, %s)",
+                       (course_id, course_name))
+        db_connection.commit()
+        mycursor.close()
+        db_connection.close()
+
+        return jsonify({'message': 'Course added successfully'}), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+    
+
+#Retrieve all the courses
+@app.route('/courses', methods=['GET'])
+def get_courses():
+    try:
+        db_connection = get_db_connection()
+        mycursor = db_connection.cursor(dictionary=True)
+        mycursor.execute("SELECT * FROM Course")
+        courses = mycursor.fetchall()
+        return jsonify(courses)
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    finally:
+        mycursor.close()
+        db_connection.close()
+
+#Retrieve all the courses for a particular student
+@app.route('/courses/student/<int:student_id>', methods=['GET'])
+def get_courses_for_student(student_id):
+    try:
+        db_connection = get_db_connection()
+        mycursor = db_connection.cursor(dictionary=True)
+        mycursor.execute("SELECT * FROM Enrol WHERE userID = %s", (student_id,))
+        courses = mycursor.fetchall()
+        if courses:
+            return jsonify({'courses': courses}), 200
+        else:
+            return jsonify({'error': 'Courses not found for the student'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    finally:
+        mycursor.close()
+        db_connection.close()
+
+#Retrieve courses taught by a particular lecturer
+@app.route('/courses/lecturer/<int:lecturer_id>', methods=['GET'])
+def get_courses_for_lecturer(lecturer_id):
+    try:
+        db_connection = get_db_connection()
+        mycursor = db_connection.cursor(dictionary=True)
+        mycursor.execute("SELECT * FROM Course WHERE userID = %s", (lecturer_id,))
+        courses = mycursor.fetchall()
+        if courses:
+            return jsonify({'courses': courses}), 200
+        else:
+            return jsonify({'error': 'Courses not found for the lecturer'}), 404
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    finally:
+        mycursor.close()
+        db_connection.close()
+
+#Register for course
+@app.route('/register_course', methods=['POST'])
+def register_course():
+    try:
+        data = request.json
+
+        course_id = data.get('courseID')
+        student_id = data.get('userID')
+
+        user_role = request.headers.get('role')
+
+        if not is_student():
+            return jsonify({'error': 'Only students can register for courses'}), 403
+
+        db_connection = get_db_connection()
+        mycursor = db_connection.cursor(dictionary=True)
+
+        # Check if the course exists
+        mycursor.execute("SELECT * FROM Course WHERE courseID = %s", (course_id,))
+        course = mycursor.fetchone()
+        if not course:
+            return jsonify({'error': 'Course does not exist'}), 404
+        mycursor.execute("INSERT INTO Enrol (userID, courseID) VALUES (%s, %s)", (student_id, course_id))
+        db_connection.commit()
+
+
+        mycursor.close()
+        db_connection.close()
+
+        return jsonify({'message': 'Student registered for course successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+#Retrieve members of a course
+@app.route('/courses/members/<int:course_id>', methods=['GET'])
+def get_course_members(course_id):
+    try:
+        db_connection = get_db_connection()
+        mycursor = db_connection.cursor(dictionary=True)
+
+        mycursor.execute("SELECT User.*, Enrol.courseID FROM User JOIN Enrol ON User.userID = Enrol.userID WHERE Enrol.courseID = %s", (course_id,))
+        members = mycursor.fetchall()
+        return jsonify(members)
+    
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    finally:
+        mycursor.close()
+        db_connection.close()
+
+
+'''#A student/lecturer should be able to create an account.A user should be able to register with a userid and password. A user can be an admin, lecturer or student
 @app.route('/register_user', methods=['POST'])
 def register_user():
     connection = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
@@ -297,7 +449,7 @@ def get_content(cid,sid):
             return make_response(clist,200)
 
     except Exception as e:
-        return make_response({'error':str(e)},400)
+        return make_response({'error':str(e)},400)'''
 
 if __name__ == '__main__':
     app.run(debug=True)
