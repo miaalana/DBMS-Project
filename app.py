@@ -268,7 +268,7 @@ def create_calendar_events():
         cs = conn.cursor()
         clist = []
 
-        cus = request.get_json()
+        data = request.get_json()
         cid = data.get('courseID')
         name = data.get('eventName')
         date = data.get('dueDate')
