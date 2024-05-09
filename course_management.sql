@@ -1,3 +1,4 @@
+DROP DATABASE CourseManagement;
 CREATE DATABASE CourseManagement;
 DROP USER IF EXISTS 'proj2test'@'localhost';
 CREATE USER 'proj2test'@'localhost' IDENTIFIED BY 'proj2password123';
