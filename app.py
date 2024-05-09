@@ -337,7 +337,7 @@ def get_threads(fid):
         conn = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
         cs = conn.cursor()
         clist = []
-        cs.execute("SELECT threadID, title, content FROM DiscussionThread WHERE forumID={fid}")
+        cs.execute(f"SELECT threadID, title, content FROM DiscussionThread WHERE forumID={fid}")
         threads = cs.fetchall()
 
         if not threads:
@@ -380,8 +380,8 @@ def create_thread(fid):
         return make_response({'error':str(e)},400)
 
 # Users should be able to reply to a thread and replies can have replies.
-@app.route('/threads/<int:tid>/reply',methods=['POST'])
-def reply_thread(tid):
+@app.route('/<int:fid>/threads/<int:tid>/reply',methods=['POST'])
+def reply_thread(fid,tid):
     try:
         conn = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
         cs = conn.cursor()
@@ -390,7 +390,7 @@ def reply_thread(tid):
         data = request.get_json()
         content = data.get('content')
 
-        cs.execute(f"INSERT INTO DiscussionThread (forumID, parentThreadID, title, content) VALUES ((SELECT forumID FROM DiscussionThread where threadID={tid}),'{tid}','','{content}')")
+        cs.execute(f"INSERT INTO DiscussionThread (forumID, parentThreadID, title, content) VALUES ({fid},{tid},'','{content}')")
 
         conn.commit()
         cs.close()
@@ -412,7 +412,7 @@ def add_content(cid,sid):
         itype = data.get('itemType')
         content = data.get('content')
 
-        cs.execute(f"INSERT INTO SectionItem (sectionID, itemType, content) VALUES ('{sid}','{itype}','{content}')")
+        cs.execute(f"INSERT INTO SectionItem (sectionID, itemType, content) VALUES ({sid},'{itype}','{content}')")
         conn.commit()
 
         cs.close()
@@ -425,7 +425,7 @@ def add_content(cid,sid):
 
 # Should be able to retrieve all the course content for a particular course.
 @app.route('/course/<int:cid>/section',methods=['GET'])
-def get_content(cid,sid):
+def get_content(cid):
     try:
         conn = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
         cs = conn.cursor()
@@ -439,8 +439,8 @@ def get_content(cid,sid):
             conn.close()
             return make_response({"message":"No content found."},201)
         else:
-            for sid, itype, content in threads:
-                lst={"contentID":sid,"itemType":title,"content":content}
+            for sid, itype, content in content:
+                lst={"contentID":sid,"itemType":itype,"content":content}
                 clist.append(lst)
         
             cs.close()
