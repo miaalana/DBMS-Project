@@ -167,7 +167,7 @@ def register_user():
     userid = data.get('userID')
     fname = data.get('fname')
     lname = data.get('lname')
-    email = data.get('email')     
+    email = data.get('email')
     password = data.get('password')
     role = data.get('role')
 
@@ -189,7 +189,7 @@ def register_user():
     cursor.execute("INSERT INTO User (userID, fname, lname, email, password, role) VALUES (%s, %s, %s, %s, %s, %s)", (userid, fname, lname, email, hashed_password, role))
     conn.commit()
     cursor.close()
-    conn.close() 
+    conn.close()
     
     return jsonify({'Message': 'User registered successfully'}), 201
 
@@ -199,7 +199,7 @@ def login_user():
     cursor = conn.cursor()
 
     data = request.json
-    email = data.get('email')     
+    email = data.get('email')
     password = data.get('password')
 
     if not email or not password:
@@ -213,7 +213,7 @@ def login_user():
     if not credential_exists:
         return jsonify({'Error': 'Enter valid credentials'}), 400
     cursor.close()
-    conn.close() 
+    conn.close()
     return jsonify({'Message': 'User login successfully'}), 200
 
 # Should be able to retrieve all calendar events for a particular course.
@@ -365,11 +365,11 @@ def create_thread(fid):
         cs = conn.cursor()
         clist = []
 
-        data = request.get_json
+        data = request.get_json()
         title = data.get('title')
         content = data.get('content')
 
-        cs.execute(f"INSERT INTO DiscussionThread (forumID, parentThreadID, title, content) VALUES ('{fid}','NULL','{title}','{content}')")
+        cs.execute(f"INSERT INTO DiscussionThread (forumID, parentThreadID, title, content) VALUES ('{fid}',1,'{title}','{content}')")
         conn.commit()
         cs.close()
         conn.close()
@@ -423,7 +423,7 @@ def add_content(cid,sid):
     except Exception as e:
         return make_response({'error':str(e)},400)
 
-# Should be able to retrieve all the course content for a particular course. 
+# Should be able to retrieve all the course content for a particular course.
 @app.route('/course/<int:cid>/section',methods=['GET'])
 def get_content(cid,sid):
     try:
