@@ -245,8 +245,8 @@ def get_student_calendar_events(uid,date):
         conn = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
         cs = conn.cursor()
         clist = []
-        cs.execute(f"SELECT cal.eventID, cal.eventName, cal.dueDate FROM CalendarEvent cal JOIN Course c ON cal.courseID=c.courseID JOIN Enrol e ON c.courseID=e.courseID WHERE e.userID={uid} AND cal.dueDate={date}")
-
+        cs.execute(f"SELECT cal.eventID, cal.eventName, cal.dueDate FROM CalendarEvent cal JOIN Course c ON cal.courseID=c.courseID JOIN Enrol e ON c.courseID=e.courseID WHERE e.userID={uid} AND cal.dueDate='{date}'")
+        
         for eid, name, date in cs:
             cust = OrderedDict()
             cust["eventID"]= eid
