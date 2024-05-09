@@ -366,7 +366,6 @@ def create_thread(fid):
         clist = []
 
         data = request.get_json
-        fid = data.get('forumID')
         title = data.get('title')
         content = data.get('content')
 
