@@ -157,10 +157,10 @@ def get_course_members(course_id):
         db_connection.close()
 
 
-'''#A student/lecturer should be able to create an account.A user should be able to register with a userid and password. A user can be an admin, lecturer or student
+#A student/lecturer should be able to create an account.A user should be able to register with a userid and password. A user can be an admin, lecturer or student
 @app.route('/register_user', methods=['POST'])
 def register_user():
-    connection = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
+    conn = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
     cursor = conn.cursor()
 
     data = request.json
@@ -187,15 +187,15 @@ def register_user():
     hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     
     cursor.execute("INSERT INTO User (userID, fname, lname, email, password, role) VALUES (%s, %s, %s, %s, %s, %s)", (userid, fname, lname, email, hashed_password, role))
-    connection.commit()
+    conn.commit()
     cursor.close()
-    connection.close() 
+    conn.close() 
     
     return jsonify({'Message': 'User registered successfully'}), 201
 
 @app.route('/login', methods=['POST'])
-def register_user():
-    connection = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
+def login_user():
+    conn = mysql.connector.connect(host = 'localhost',user = 'proj2test',password = 'proj2password123',database = 'CourseManagement')
     cursor = conn.cursor()
 
     data = request.json
@@ -213,7 +213,7 @@ def register_user():
     if not credential_exists:
         return jsonify({'Error': 'Enter valid credentials'}), 400
     cursor.close()
-    connection.close() 
+    conn.close() 
     return jsonify({'Message': 'User login successfully'}), 200
 
 # Should be able to retrieve all calendar events for a particular course.
@@ -449,7 +449,7 @@ def get_content(cid,sid):
             return make_response(clist,200)
 
     except Exception as e:
-        return make_response({'error':str(e)},400)'''
+        return make_response({'error':str(e)},400)
 
 if __name__ == '__main__':
     app.run(debug=True)
