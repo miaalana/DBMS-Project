@@ -109,3 +109,9 @@ with open('project_data.sql', 'w') as file:
     for course_id, students_in_course in course_enrollments.items():
         for student_id in students_in_course:
             file.write(f"INSERT INTO Enrol (userID, courseID) VALUES ({student_id}, {course_id});\n")
+
+    for i, lecturer_courses in enumerate(lcourses, start=1):
+        for course_name in lecturer_courses:
+            course_id = courses.index(course_name) + 1
+            lecturer_id = 100001 + i
+            file.write(f"INSERT INTO Teaches (userID, courseID) VALUES ({lecturer_id}, {course_id});\n")
