@@ -87,8 +87,10 @@ CREATE TABLE SectionItem (
 CREATE TABLE Assignment (
     assignmentID int AUTO_INCREMENT,
     courseID int,
+    userID int,
 	Grade int,
     title varchar(255),
+    submission varchar(255),
     submissionStatus varchar(255),
     gradingStatus varchar(255),
     dueDate varchar(255),
