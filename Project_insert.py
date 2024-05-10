@@ -56,35 +56,37 @@ courses = [
 ]
 
 students = [(i, fake.first_name(), fake.last_name()) for i in range(1, 100001)]
-lecturers = [(i, fake.first_name(), fake.last_name()) for i in range(1001, 1051)]
+lecturers = [(i, fake.first_name(), fake.last_name()) for i in range(100001, 1000051)]
 random.shuffle(courses)
 
+course_enrollments = {}
+
 # Each course has at least 10 members
-Enrol = [[] for _ in range(len(courses))]
-for s in students:
-    for i in range(3):
-        random_course = random.randint(0, len(courses) - 1)
-        Enrol[random_course].append(s[0])
+for course_id, course_name in enumerate(courses, start=1):
+    course_enrollments[course_id] = []
 
 # Students do at least 6 courses
-for i, students_in_course in enumerate(Enrol):
-    if len(students_in_course) > 6:
-        Enrol[i] = students_in_course[:6]
+for student_id, first_name, last_name in students:
+    num_enrollments = random.randint(3, 6)
+    for _ in range(num_enrollments):
+        course_id = random.randint(1, len(courses))
+        if student_id not in course_enrollments[course_id]:
+            course_enrollments[course_id].append(student_id)
 
 # Student in at least 3 courses
-for i, students_in_course in enumerate(Enrol):
+for course_id, students_in_course in course_enrollments.items():
     while len(students_in_course) < 3:
         random_s = random.randint(0, len(students) - 1)
         sid = students[random_s][0]
         if sid not in students_in_course:
-            Enrol[i].append(sid)
+            students_in_course.append(sid)
 
-# Lecturer only teaches max 5 courses and teaches atleast 1 course
+# Lecturer only teaches max 5 courses and teaches at least 1 course
 lcourses = [[] for _ in range(len(lecturers))]
 
 for i, lecturer in enumerate(lecturers):
     num_courses = random.randint(1, 5)  
-    courses_assigned = random.sample(courses, num_courses) 
+    courses_assigned = random.sample(courses, min(num_courses, len(courses))) 
     lcourses[i].extend(courses_assigned)
 
 # SQL insert queries
@@ -104,8 +106,6 @@ with open('project_data.sql', 'w') as file:
     for i, course in enumerate(courses):
         file.write(f"INSERT INTO Course (courseID, courseName) VALUES ({i + 1}, '{course}');\n")
 
-    for i, enrol in enumerate(Enrol):
-        for student_id in enrol:
-            file.write(f"INSERT INTO Enrol (userID, courseID) VALUES ({student_id}, {i + 1});\n")
-
-
+    for course_id, students_in_course in course_enrollments.items():
+        for student_id in students_in_course:
+            file.write(f"INSERT INTO Enrol (userID, courseID) VALUES ({student_id}, {course_id});\n")
