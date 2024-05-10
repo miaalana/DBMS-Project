@@ -76,6 +76,7 @@ def get_courses_for_student(student_id):
     try:
         db_connection = get_db_connection()
         mycursor = db_connection.cursor(dictionary=True)
+        
         mycursor.execute("SELECT * FROM Enrol WHERE userID = %s", (student_id,))
         courses = mycursor.fetchall()
         if courses:
@@ -94,7 +95,14 @@ def get_courses_for_lecturer(lecturer_id):
     try:
         db_connection = get_db_connection()
         mycursor = db_connection.cursor(dictionary=True)
-        mycursor.execute("SELECT * FROM Course WHERE userID = %s", (lecturer_id,))
+        sql = """
+                SELECT c.courseID, c.courseName
+                FROM Course c
+                JOIN Enrol e ON c.courseID = e.courseID
+                JOIN User u ON e.userID = u.userID
+                WHERE u.userID = %s AND u.role = 'Lecturer'
+            """
+        mycursor.execute(sql, (lecturer_id,))
         courses = mycursor.fetchall()
         if courses:
             return jsonify({'courses': courses}), 200
